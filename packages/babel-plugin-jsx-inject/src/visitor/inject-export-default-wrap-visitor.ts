@@ -21,16 +21,16 @@ export const injectExportDefaultWrapVisitor: Visitor = {
         dependRequire = []
       } = exportDefaultWrapInjectOption
 
-      const templateCodeStr = (() => {
-        if (typeof templateCode === 'string') return templateCode
-        return templateCode(exportDefaultDeclarationNodePath, state)
+      // 生成模版代码Ast
+      const templateCodeAst = (() => {
+        const isTemplateCodeStr = typeof templateCode === 'string'
+        const tempTemplateCode = isTemplateCodeStr ? templateCode : templateCode(exportDefaultDeclarationNodePath, state)
+        if (typeof tempTemplateCode === 'string') return template.expression(templateCode as string, { plugins: ['jsx'] })()
+        if (types.isNode(tempTemplateCode)) return tempTemplateCode
       })()
 
-      // 若模版代码字符串为空则跳过
-      if (!templateCodeStr) return
-
-      // 将模版代码转为 ast
-      const templateCodeAst = template.expression(templateCodeStr)() as any
+      // 若模版代码Ast为空则跳过
+      if (!templateCodeAst) return
 
       // 若父节点已经是目标节点则跳过
       const isProcessed = (() => {

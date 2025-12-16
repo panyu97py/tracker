@@ -31,21 +31,20 @@ export const injectJsxElementAttributeVisitor: Visitor = {
       })()
 
       // 生成模版代码字符串
-      const templateCodeStr = (() => {
-        if (typeof templateCode === 'string') return templateCode
-        return templateCode(jsxOpeningElementNodePath, state)
+      const templateCodeAst = (() => {
+        const isTemplateCodeStr = typeof templateCode === 'string'
+        const tempTemplateCode = isTemplateCodeStr ? templateCode : templateCode(jsxOpeningElementNodePath, state)
+        if (typeof tempTemplateCode === 'string') return types.jsxExpressionContainer(template.expression(templateCode as string, { plugins: ['jsx'] })())
+        if (types.isNode(tempTemplateCode)) return tempTemplateCode
       })()
 
       // 若模版代码字符串为空或元素不匹配则返回
-      if (!isTargetMatch || !templateCodeStr) return
+      if (!isTargetMatch || !templateCodeAst) return
 
       // 删除原有属性
       const attributes = curAttributes.filter(item => {
-        return !types.isJSXAttribute(item) || item.name.name === attribute
+        return !types.isJSXAttribute(item) || item.name.name !== attribute
       })
-
-      // 将模版代码转为 ast
-      const templateCodeAst = template.expression(templateCodeStr, { plugins: ['jsx'] })() as any
 
       // 插入模版代码为属性值
       attributes.push(types.jsxAttribute(types.jsxIdentifier(attribute), templateCodeAst))

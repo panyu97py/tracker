@@ -34,7 +34,8 @@
     "@babel/types": "^7.0.0",
     "@types/babel__core": "^7.20.5",
     "@types/babel__helper-plugin-utils": "^7.0.0",
-    "babel-plugin-tester": "^11.0.4"
+    "babel-plugin-tester": "^11.0.4",
+    "typescript": "^5.9.3"
   },
   "gitHead": "dfc91483829361aef7f1cc282225522e52b24e9f"
 }
